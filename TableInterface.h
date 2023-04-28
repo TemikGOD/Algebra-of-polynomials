@@ -1,11 +1,12 @@
 #pragma once
+#include <string>
 class TableInterface
 {
+public:
+	virtual void addPolynomial(const std::string& _key) = 0;
+	virtual void deletePolynomial(const int& _key) = 0;
 protected:
-	unsigned int key;
-	virtual void addPolynomial(const Polynomial& _pol) = 0;
-	virtual void deletePolynomial(const Polynomial& _pol) = 0;
-	virtual Polynomial search(const unsigned int& _key) = 0;
+	virtual Polynomial search(const std::string& _key) = 0;
 };
 
 
