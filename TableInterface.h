@@ -7,6 +7,7 @@ public:
 	virtual void deletePolynomial(const int& _key) = 0;
 protected:
 	virtual Polynomial search(const std::string& _key) = 0;
+	virtual bool isInTable(const std::string& _key) = 0;
 };
 
 
