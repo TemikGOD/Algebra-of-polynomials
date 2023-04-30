@@ -38,8 +38,8 @@ string Poly::Print()
 
 double Poly::Point(double _x, double _y, double _z)
 {
-    double result = 0; List<Monom> cpylist; cpylist.copy(list);
-    while (!cpylist.isEmpty()) { Monom monom; monom = cpylist.pop_back();
+    double result = 0; List<Monom> copy; copy.copy(list);
+    while (!copy.isEmpty()) { Monom monom; monom = copy.pop_back();
         double coef = monom.check();
         int x = monom.deg[0];
         int y = monom.deg[1];
