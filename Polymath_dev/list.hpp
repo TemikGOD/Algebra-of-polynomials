@@ -3,6 +3,7 @@
 
 #include <list>
 #include <iostream>
+#include "monom.hpp"
 
 using namespace std;
 
@@ -21,20 +22,29 @@ public:
 template <class T>
 class List
 {
-    Node<T>* head = nullptr; Node<T>* tail = nullptr;
+    Node<T>* head; Node<T>* tail;
 public:
-    size_t size = 0;
+    size_t size;
     
-    bool isEmpty() { if (head == nullptr) return true; else return false; }
+    List() : head(nullptr), tail(nullptr), size(0) { }
+    
+    bool isEmpty() { if (head == nullptr) return true; else return false;}
     
     void control() { while (head != nullptr) pop_front(); }
+    
+    Monom& getFront()
+    {
+        if(isEmpty())
+            throw runtime_error("List is empty");
+        return head->value;
+    }
     
     void copy(const List& item)
     {
         control(); Node<T>* stuff = item.head;
-        for (int i = 0; i < item.size && stuff->another != nullptr; i++) { push_back(stuff->value); stuff = stuff->another; }
-        if (item.size != 0 && stuff == item.tail) {
-            push_back(stuff->value); }
+        for (int i = 0; i < item.size && stuff->another != nullptr; i++)
+        { push_back(stuff->value); stuff = stuff->another; }
+        if (item.size != 0 && stuff == item.tail) { push_back(stuff->value); }
         size = item.size;
     }
     
@@ -49,7 +59,7 @@ public:
     {
         Node<T>* stuff = new Node<T>(_value);
         if (head == nullptr) { head = stuff; tail = stuff; }
-        else { stuff->next = head; head = stuff; } size++;
+        else { stuff->another = head; head = stuff; } size++;
     }
     
     T pop_back()
@@ -60,7 +70,8 @@ public:
             Node<T>* remove = head;
             while (remove->another != tail) { remove = remove->another; }
             delete tail; tail = remove;
-            return stuff; }
+            return stuff;
+        }
         else { tail = nullptr; head = nullptr; return stuff; } size--;
     }
     

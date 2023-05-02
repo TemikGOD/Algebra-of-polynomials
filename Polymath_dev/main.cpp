@@ -33,7 +33,7 @@
  Таблица на поисковом дереве (АВЛ).
 
  https://github.com/wsemnazlo
- Полином. (-)
+ Полином. (?)
  Линейная таблица на списке. (+)
  Хеш-таблица с открытым перемешиванием.
  Общий интерфейс таблиц. (+)
@@ -66,7 +66,7 @@ int main(int argc, const char * argv[]) {
     
     Monom monom4;
     cout << "5. x': "; monom4 = monom.DerX(monom); cout << monom4.Print() << endl;
-    cout << "6. y': " ;monom4 = monom.DerY(monom); cout << monom4.Print() << endl;
+    cout << "6. y': "; monom4 = monom.DerY(monom); cout << monom4.Print() << endl;
     cout << "7. z': "; monom4 = monom.DerZ(monom); cout << monom4.Print() << endl << endl;
     
     Monom monom5(4, d);
@@ -77,9 +77,21 @@ int main(int argc, const char * argv[]) {
     List<Monom> list2; list2.push_back(monom2); list2.push_back(monom);
     Poly polynom2(list2); cout << "Second poly: "; cout << polynom2.Print() << "; " << endl;
     
-    Poly polynom3;
-    cout << "1. point: "; polynom3.Point(1, 2, 3); cout << polynom3.Print() << endl;
-
+    List<Monom> list3; list3.push_back(monom5); list.push_back(monom);
+    Poly polynom3(list3); cout << "Point test poly: "; cout << polynom3.Print() << ", ";
+    cout << "Point result: "; polynom3.Point(1, 2, 3);
+    
+    Poly polynom4;
+    cout << "1. +: "; polynom4 = polynom + polynom2; cout << polynom4.Print() << endl;
+    // cout << "2. -: "; cout << endl;
+    cout << "3. *: "; polynom4 = polynom * polynom2; cout << polynom4.Print() << endl;
+    List<Monom> list5; list5.push_back(monom5);
+    Poly polynom5(list5); cout << "4. const * test poly: ";
+    cout << polynom5.Print(); cout << " * 4" << " = ";
+    polynom5 = polynom5 * 4; cout << polynom5.Print() << endl;
+    // cout << "5. const + test poly: "; cout << polynom5.Print(); cout << " + 4" << " = ";
+    // polynom5 = polynom5 + 4; cout << polynom5.Print() << endl;
+    
     return 0;
 }
 

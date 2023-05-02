@@ -24,16 +24,28 @@ using namespace std;
 
 class Monom {
 private:
-    double coeff; int deg[3]; bool ratio(Monom t_monom);
+    double coeff; int deg[3]; bool ratio(Monom _monom);
 protected:
     double check();
 public:
+    
+    float getCoeff() { return coeff; }
+    void setCoeff(float c) { coeff = c; }
+    int getDegree(int index = 0) {
+        if(index >= 3) {
+            // обработка ошибки: индекс выходит за пределы массива deg
+            return -1; // или выбросить исключение
+        }
+        return deg[index];
+    }
+    
     Monom(); Monom(const Monom& monom); Monom(double _сoeff, int* _deg); ~Monom(); string Print();
         
     Monom operator=(const Monom& _monom);
     
     Monom operator+(const Monom& _monom);
     Monom operator-(const Monom& _monom);
+    
     Monom operator/(const Monom& _monom);
     
     Monom operator*(const Monom& _monom);

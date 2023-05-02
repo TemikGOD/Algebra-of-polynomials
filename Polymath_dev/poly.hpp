@@ -32,16 +32,19 @@ class Poly {
 private:
     List<Monom> list;
 public:
-    Poly() { }; Poly(const Poly& _poly); Poly(List<Monom> _list); ~Poly() { } string Print();
+    Poly() { }; Poly(const Poly& _poly); Poly(List<Monom> _list); ~Poly() { }
+    
+    string Print();
     
     Poly& operator=(const Poly& _poly);
     
-    Poly operator+(Poly _poly);
-    Poly operator-(Poly _poly);
-    Poly operator/(Poly _poly);
+    Poly operator+(const Poly& _poly);
+    Poly operator+(const double _coeff);
+    Poly operator-(const Poly& _poly);
+    Poly operator/(Poly& _poly);
     
-    Poly operator*(Poly _poly);
-    Poly operator*(double _coeff);
+    Poly operator*(const Poly& _poly);
+    Poly operator*(const double _coeff);
     
     double Point(double _x, double _y, double _z);
 };

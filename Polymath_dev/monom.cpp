@@ -17,11 +17,6 @@ using namespace std;
 
 double Monom::check() { return coeff; }
 
-bool Monom::ratio(Monom t_monom)
-{
-    return (deg[0] == t_monom.deg[0] && deg[1] == t_monom.deg[1] && deg[2] == t_monom.deg[2]);
-}
-
 Monom::Monom()
 {
     coeff = 0.0; for (int i = 0; i < 2; i++) { deg[i] = 0; }
@@ -40,6 +35,11 @@ Monom::Monom(double _coeff, int* _deg)
 }
 
 Monom::~Monom() { }
+
+bool Monom::ratio(Monom monom)
+{
+    return (deg[0] == monom.deg[0] && deg[1] == monom.deg[1] && deg[2] == monom.deg[2]);
+}
 
 string Monom::Print()
 {
@@ -96,6 +96,6 @@ Monom Monom::DerY(const Monom _monom)
     
 Monom Monom::DerZ(const Monom _monom)
 {
-    int newD[] = { deg[0], deg[1], deg[2] };
-    if (_monom.deg[2] > 0) { newD[2]--; return Monom(coeff * _monom.deg[2] , newD); } else throw::invalid_argument("Error");
+    int updateDeg[] = { deg[0], deg[1], deg[2] };
+    if (_monom.deg[2] > 0) { updateDeg[2]--; return Monom(coeff * _monom.deg[2] , updateDeg); } else throw::invalid_argument("Error");
 };
