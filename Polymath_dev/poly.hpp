@@ -4,49 +4,36 @@
 #include "monom.hpp"
 #include "list.hpp"
 
-/*
- 
- Объявления класса полиномов.
- 
- Хранится:
- 1. Список мономов. (+)
- 
- Объвлены методы:
- 1. Сложения полиномов. (+)
- 2. Вычитания полиномов. (+)
- 
- 3. Деление полиномов. (+)
- 
- 4. Умножения полиномов. (+)
- 5. Умножения полинома на константу. (+)
- 
- 6. Вычисление в точке. (+)
- 
- 7. Нахождения производной.
- 
-*/
-
 using namespace std;
 
-class Poly {
+class Poly
+{
 private:
     List<Monom> list;
 public:
-    Poly() { }; Poly(const Poly& _poly); Poly(List<Monom> _list); ~Poly() { }
+    Poly() { };
     
-    string Print();
+    Poly(const Poly& _poly);
     
-    Poly& operator=(const Poly& _poly);
+    Poly(const List<Monom>& _list);
     
-    Poly operator+(const Poly& _poly);
-    Poly operator+(const double _coeff);
-    Poly operator-(const Poly& _poly);
-    Poly operator/(Poly& _poly);
+    ~Poly() { }
     
-    Poly operator*(const Poly& _poly);
-    Poly operator*(const double _coeff);
+    Poly& operator=(const Poly& other);
     
-    double Point(double _x, double _y, double _z);
+    Poly operator+(const Poly& other) const;
+    Poly operator+(const double other) const;
+    
+    Poly operator-(const Poly& other) const;
+    
+    Poly operator*(const Poly& other) const;
+    Poly operator*(const double other) const;
+    
+    Poly operator/(const Poly& other) const;
+
+    double Point(double _x, double _y, double _z) const;
+    
+    string Print() const;
 };
 
 #endif /* poly_hpp */

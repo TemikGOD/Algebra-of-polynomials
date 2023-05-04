@@ -1,97 +1,67 @@
 #include "monom.hpp"
 #include "poly.hpp"
-//#include "linearListTable.hpp"
 
 #include <iostream>
 #include <string>
 
-/*
- 
- Программа предназначена для выполнения алгебраических операций над полиномами с тремя переменными.
-
- 1. Полиномы хранятся в виде списка;
- 2. Полиномы хранятся во всех таблицах одновременно, ключом является имя;
- 3. Таблиц должно быть 6 видов:
-    - Линейная на массиве.
-    - Линейная на списке. (+)
-    - Упорядоченная на массиве.
-    - На поисковом дереве (АВЛ).
-    - Хеш-таблица с открытым перемешиванием.
-    - Хеш-таблица со списками (Метод цепочек).
-    - Активная (выбранная пользователем) таблица должна выводиться на экран в формате двух столбов:
-      1. Имя полинома.
-      2. Строковое представление полинома.
- 
- Операции над таблицами:
- 1. Добавление полинома (Во всех сразу),
- 2. Удаление полинома (Во всех сразу),
- 3. Поиск (Только в активной таблице; Выполняется в процессе вычисления выражений, составленных из имен полиномов);
-
- https://github.com/TemikGOD
- Интерфейс.
- Линейная таблица на массиве.
- Таблица на поисковом дереве (АВЛ).
-
- https://github.com/wsemnazlo
- Полином. (?)
- Линейная таблица на списке. (+)
- Хеш-таблица с открытым перемешиванием.
- Общий интерфейс таблиц. (+)
-
- https://github.com/savchukPR
- Постфикс для полиномов.
- Упорядоченная таблица на массиве.
- Хеш-таблица со списками.
- 
-*/
-
 using namespace std;
 
-int main(int argc, const char * argv[]) {
+int main()
+{
+    // Коэффициенты мономов
+    const int arr[] = {3, 2, 2};
+    const Monom monom1(6, arr);
+    const Monom monom2(5, arr);
+    const Monom monom5(-5, arr);
+
+    cout << "Первый моном: " << monom1.Print() << endl;
+    cout << "Второй моном: " << monom2.Print() << endl << endl;
     
-    int* d = new int(3);
-    d[0] = 3; d[1] = 2; d[2] = 2;
-    
-    Monom monom(6, d);
-    cout << "First monom: "; cout << monom.Print() << ", ";
-    
-    Monom monom2(5, d);
-    cout << "Second monom: "; cout << monom2.Print() << "; " << endl;
-    
+    // Мономы
     Monom monom3;
-    cout << "1. +: "; monom3 = monom + monom2; cout << monom3.Print() << endl;
-    cout << "2. -: "; monom3 = monom - monom2; cout << monom3.Print() << endl;
-    cout << "3. *: "; monom3 = monom * monom2; cout << monom3.Print() << endl;
-    cout << "4. /: "; monom3 = monom / monom2; cout << monom3.Print() << endl << endl;
+    monom3 = monom1 + monom2; cout << "1. Сумма мономов: " << monom3.Print() << endl;
+    monom3 = monom1 - monom2; cout << "2. Разность мономов: " << monom3.Print() << endl;
+    monom3 = monom1 * monom2; cout << "3. Произведение мономов:: " << monom3.Print() << endl;
+    try { monom3 = monom1 / monom2; cout << "4. Частное мономов: " << monom3.Print() << endl; }
+    catch (const invalid_argument& e) { cerr << "Ошибка: " << e.what() << endl; }
     
     Monom monom4;
-    cout << "5. x': "; monom4 = monom.DerX(monom); cout << monom4.Print() << endl;
-    cout << "6. y': "; monom4 = monom.DerY(monom); cout << monom4.Print() << endl;
-    cout << "7. z': "; monom4 = monom.DerZ(monom); cout << monom4.Print() << endl << endl;
+    monom4 = monom1.DerX(monom1); cout << "5. Производная X первого монома: " << monom4.Print() << endl;
+    monom4 = monom1.DerY(monom1); cout << "6. Производная Y первого монома: " << monom4.Print() << endl;
+    monom4 = monom1.DerZ(monom1); cout << "7. Производная Z первого монома: " << monom4.Print() << endl << endl;
     
-    Monom monom5(4, d);
-
-    List<Monom> list; list.push_back(monom5); list.push_back(monom);
-    Poly polynom(list); cout << "First poly: "; cout << polynom.Print() << ", ";
+    // Полиномы
+    List<Monom> list1;
+    list1.push_back(monom5); list1.push_back(monom1);
+    Poly polynom1(list1);
+    cout << "Первый полином: " << polynom1.Print() << endl;
     
-    List<Monom> list2; list2.push_back(monom2); list2.push_back(monom);
-    Poly polynom2(list2); cout << "Second poly: "; cout << polynom2.Print() << "; " << endl;
+    List<Monom> list2;
+    list2.push_back(monom2); list2.push_back(monom1);
+    Poly polynom2(list2);
+    cout << "Второй полином: " << polynom2.Print() << endl << endl;
     
-    List<Monom> list3; list3.push_back(monom5); list.push_back(monom);
-    Poly polynom3(list3); cout << "Point test poly: "; cout << polynom3.Print() << ", ";
-    cout << "Point result: "; polynom3.Point(1, 2, 3);
+    Poly polynom4 = polynom1 + polynom2; cout << "1. Сумма полиномов: " << polynom4.Print() << endl;
+    polynom4 = polynom1 - polynom2; cout << "2. Разность полиномов: " << polynom4.Print() << endl;
+    polynom4 = polynom1 * polynom2; cout << "3. Произведение полиномов: " << polynom4.Print() << endl;
+    polynom4 = polynom1 / polynom1; cout << "4. Частное полиномов: " << polynom4.Print() << endl;
     
-    Poly polynom4;
-    cout << "1. +: "; polynom4 = polynom + polynom2; cout << polynom4.Print() << endl;
-    // cout << "2. -: "; cout << endl;
-    cout << "3. *: "; polynom4 = polynom * polynom2; cout << polynom4.Print() << endl;
-    List<Monom> list5; list5.push_back(monom5);
-    Poly polynom5(list5); cout << "4. const * test poly: ";
-    cout << polynom5.Print(); cout << " * 4" << " = ";
-    polynom5 = polynom5 * 4; cout << polynom5.Print() << endl;
-    // cout << "5. const + test poly: "; cout << polynom5.Print(); cout << " + 4" << " = ";
-    // polynom5 = polynom5 + 4; cout << polynom5.Print() << endl;
+    List<Monom> list5;
+    list5.push_back(monom5);
+    Poly polynom5(list5);
+    cout << "5. Умножение полинома на константу: " << polynom5.Print();
+    polynom5 = polynom5 * 4; cout << " * 4 = " << polynom5.Print() << endl;
+    cout << "6. Сумма полинома и константы: " << polynom5.Print() << " + 4 = ";
+    polynom5 = polynom5 + 4; cout << polynom5.Print() << endl << endl;
+    
+    List<Monom> list3;
+    list3.push_back(monom5); list3.push_back(monom1);
+    Poly polynom3(list3);
+    cout << "Третий полином: " << polynom3.Print() << endl;
+    
+    cout << "Результат третьего полинома в точке: " << polynom3.Point(1, 2, 3) << endl << endl;
     
     return 0;
 }
+
 

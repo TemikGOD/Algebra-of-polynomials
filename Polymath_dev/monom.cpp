@@ -1,101 +1,134 @@
 #include "monom.hpp"
 
-/*
- 
- Реализация класса мономов.
-  
- Реализованы методы:
- 1. Сложения мономов. (+)
- 2. Вычитания мономов. (+)
- 3. Умножения мономов. (+)
- 4. Деление мономов. (+)
- 5. Нахождения производных X, Y, Z. (+)
- 
-*/
-
 using namespace std;
-
-double Monom::check() { return coeff; }
 
 Monom::Monom()
 {
-    coeff = 0.0; for (int i = 0; i < 2; i++) { deg[i] = 0; }
+    coeff = 0.0; for (int i = 0; i < 3; i++) { deg[i] = 0; }
 }
 
-Monom::Monom(const Monom& monom)
+Monom::Monom(const Monom& other)
 {
-    coeff = monom.coeff;
-    for (int i = 0; i < 3; i++) { deg[i] = monom.deg[i]; }
+    coeff = other.coeff; for (int i = 0; i < 3; i++) { deg[i] = other.deg[i]; }
 }
 
-Monom::Monom(double _coeff, int* _deg)
+Monom::Monom(double other, const int* _deg)
 {
-    coeff = _coeff;
-    for (int i = 0; i < 3; i++) { deg[i] = _deg[i]; }
+    coeff = other;
+    deg = degree_array({ _deg[0], _deg[1], _deg[2] });
+}
+
+Monom::Monom(const double other, const degree_array& _deg)
+{
+    coeff = other;
+    deg = _deg;
 }
 
 Monom::~Monom() { }
 
-bool Monom::ratio(Monom monom)
+void Monom::setCoeff(double c)
 {
-    return (deg[0] == monom.deg[0] && deg[1] == monom.deg[1] && deg[2] == monom.deg[2]);
+    coeff = c;
 }
 
-string Monom::Print()
+double Monom::getCoeff() const
 {
-    stringstream out; out << coeff;
-    if (deg[0] != 0) out << "x^" << deg[0];
-    if (deg[1] != 0) out << "*y^" << deg[1];
-    if (deg[2] != 0) out << "*z^" << deg[2];
-    return out.str();
+    return coeff;
 }
 
-Monom Monom::operator=(const Monom& _monom)
+int Monom::getDegree(int index) const
 {
-    coeff = _monom.coeff;
-    deg[0] = _monom.deg[0];
-    deg[1] = _monom.deg[1];
-    deg[2] = _monom.deg[2];
+    if (index >= 0 && index < DEGREE_COUNT) { return deg[index]; }
+    else { throw std::invalid_argument("Error: index out of range"); }
+}
+
+bool Monom::ratio(const Monom& other) const
+{
+    return (deg[0] == other.deg[0] && deg[1] == other.deg[1] && deg[2] == other.deg[2]);
+}
+
+Monom& Monom::operator=(const Monom& other)
+{
+    coeff = other.coeff; deg[0] = other.deg[0]; deg[1] = other.deg[1]; deg[2] = other.deg[2];
     return *this;
 }
 
-Monom Monom::operator+(const Monom& _monom)
+Monom& Monom::operator+=(const Monom& other)
 {
-    if (ratio(_monom)) return Monom(coeff + _monom.coeff, deg); else throw invalid_argument("Error");
+    if (ratio(other)) { coeff += other.coeff; }
+    return *this;
 }
 
-Monom Monom::operator-(const Monom& _monom)
+Monom& Monom::operator-=(const Monom& other)
 {
-    if (ratio(_monom)) return Monom(coeff - _monom.coeff, deg); else throw invalid_argument("Error");
+    if (ratio(other)) { coeff -= other.coeff; }
+    return *this;
 }
 
-Monom Monom::operator*(const Monom& _monom)
+Monom& Monom::operator*=(const Monom& other)
 {
-    return Monom(coeff * _monom.coeff, new int[3] { deg[0] + _monom.deg[0], deg[1] + _monom.deg[1], deg[2] + _monom.deg[2] });
+    coeff *= other.coeff;
+    deg[0] += other.deg[0];
+    deg[1] += other.deg[1];
+    deg[2] += other.deg[2];
+    return *this;
 }
 
-Monom Monom::operator*(double _coeff) { return Monom(coeff * _coeff, deg); }
-
-Monom Monom::operator/(const Monom& _monom)
+Monom Monom::operator+(const Monom& other) const
 {
-    return Monom(coeff / _monom.coeff, new int[3]{ deg[0] - _monom.deg[0], deg[1] - _monom.deg[1], deg[2] - _monom.deg[2] });
+    if (ratio(other)) { return Monom(coeff + other.coeff, deg); }
+    else { throw std::invalid_argument("Error: degree arrays are not equal"); }
 }
 
-Monom Monom::DerX(const Monom _monom)
+Monom Monom::operator-(const Monom& other) const
 {
-    int newD[] = { deg[0], deg[1], deg[2] };
-    if (_monom.deg[0] > 0) { newD[0]--; return Monom(coeff * _monom.deg[0] , newD); } else throw::invalid_argument("Error");
+    if (ratio(other)) { return Monom(coeff - other.coeff, deg); }
+    else { throw std::invalid_argument("Error: degree arrays are not equal"); }
 }
 
-    
-Monom Monom::DerY(const Monom _monom)
+Monom Monom::operator*(const Monom& other) const
 {
-    int newD[] = { deg[0], deg[1], deg[2] };
-    if (_monom.deg[1] > 0) { newD[1]--; return Monom(coeff * _monom.deg[1] , newD); } else throw::invalid_argument("Error");
+    return Monom(coeff * other.coeff, degree_array {
+        deg[0] + other.deg[0],
+        deg[1] + other.deg[1],
+        deg[2] + other.deg[2] });
 }
-    
-Monom Monom::DerZ(const Monom _monom)
+
+Monom Monom::operator*(double other) const { return Monom(coeff * other, deg); }
+
+Monom Monom::operator/(const Monom& other) const
 {
-    int updateDeg[] = { deg[0], deg[1], deg[2] };
-    if (_monom.deg[2] > 0) { updateDeg[2]--; return Monom(coeff * _monom.deg[2] , updateDeg); } else throw::invalid_argument("Error");
-};
+    return Monom(coeff / other.coeff, degree_array {
+        deg[0] - other.deg[0],
+        deg[1] - other.deg[1],
+        deg[2] - other.deg[2] });
+}
+
+Monom Monom::DerX(const Monom&) const
+{
+    if (deg[0] > 0) { return Monom(coeff * deg[0], degree_array({ deg[0] - 1, deg[1], deg[2] })); }
+    else { throw invalid_argument("Error: degree of x is 0"); }
+}
+
+Monom Monom::DerY(const Monom&) const
+{
+    if (deg[1] > 0) { return Monom(coeff * deg[1], degree_array({ deg[0], deg[1] - 1, deg[2] })); }
+    else { throw std::invalid_argument("Error: degree of y is 0"); }
+}
+
+Monom Monom::DerZ(const Monom&) const
+{
+    if (deg[2] > 0) { return Monom(coeff * deg[2], degree_array({ deg[0], deg[1], deg[2] - 1 })); }
+    else { throw std::invalid_argument("Error: degree of z is 0"); }
+}
+
+string Monom::Print() const
+{
+    std::stringstream ss;
+    ss << coeff;
+    if (deg[0] > 0) { ss << "x^" << deg[0]; }
+    if (deg[1] > 0) { ss << "*y^" << deg[1]; }
+    if (deg[2] > 0) { ss << "*z^" << deg[2]; }
+    return ss.str();
+}
+
