@@ -1,5 +1,6 @@
 #include "monom.hpp"
 #include "poly.hpp"
+#include "linearListTable.hpp"
 
 #include <iostream>
 #include <string>
@@ -58,10 +59,25 @@ int main()
     list3.push_back(monom5); list3.push_back(monom1);
     Poly polynom3(list3);
     cout << "Третий полином: " << polynom3.Print() << endl;
-    
     cout << "Результат третьего полинома в точке: " << polynom3.Point(1, 2, 3) << endl << endl;
+    
+    LinearListTable<pair<string, int>> table;
+    table.addPolynomial(pair<string, int>("key1", 111));
+
+    pair<string, int> searchPoly("key1", 111);
+    if (table.isPolynomialInTable(searchPoly.first)) { cout << "Found key 1!" << endl; }
+    else { cout << "Didn't find key 1" << endl; }
+    
+    pair<string, int> removePoly("key1", 111);
+    table.deletePolynomial(removePoly.first);
+    
+    try
+    {
+        const pair<string, int> found = table.searchPolynomial("key1");
+        cout << found.first << " " << found.second << endl;
+    }
+    
+    catch (const out_of_range) { cout << "Code works as intendent." << endl; }
     
     return 0;
 }
-
-
