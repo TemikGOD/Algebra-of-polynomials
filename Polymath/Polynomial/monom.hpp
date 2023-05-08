@@ -2,6 +2,7 @@
 #define monom_hpp
 
 #include "sstream"
+#include <array>
 
 using namespace std;
 
