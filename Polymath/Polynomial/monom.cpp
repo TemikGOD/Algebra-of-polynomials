@@ -15,7 +15,11 @@ Monom::Monom(const Monom& other)
 Monom::Monom(double other, const int* _deg)
 {
     coeff = other;
-    deg = degree_array({ _deg[0], _deg[1], _deg[2] });
+    if (_deg != nullptr) {
+        deg = degree_array({ _deg[0], _deg[1], _deg[2] });
+    } else {
+        deg = degree_array({ 0, 0, 0 });
+    }
 }
 
 Monom::Monom(const double other, const degree_array& _deg)
@@ -26,11 +30,6 @@ Monom::Monom(const double other, const degree_array& _deg)
 
 Monom::~Monom() { }
 
-void Monom::setCoeff(double c)
-{
-    coeff = c;
-}
-
 double Monom::getCoeff() const
 {
     return coeff;
@@ -39,7 +38,7 @@ double Monom::getCoeff() const
 int Monom::getDegree(int index) const
 {
     if (index >= 0 && index < DEGREE_COUNT) { return deg[index]; }
-    else { throw std::invalid_argument("Error: index out of range"); }
+    else { throw invalid_argument("Error: index out of range"); }
 }
 
 bool Monom::ratio(const Monom& other) const
@@ -53,37 +52,16 @@ Monom& Monom::operator=(const Monom& other)
     return *this;
 }
 
-Monom& Monom::operator+=(const Monom& other)
-{
-    if (ratio(other)) { coeff += other.coeff; }
-    return *this;
-}
-
-Monom& Monom::operator-=(const Monom& other)
-{
-    if (ratio(other)) { coeff -= other.coeff; }
-    return *this;
-}
-
-Monom& Monom::operator*=(const Monom& other)
-{
-    coeff *= other.coeff;
-    deg[0] += other.deg[0];
-    deg[1] += other.deg[1];
-    deg[2] += other.deg[2];
-    return *this;
-}
-
 Monom Monom::operator+(const Monom& other) const
 {
     if (ratio(other)) { return Monom(coeff + other.coeff, deg); }
-    else { throw std::invalid_argument("Error: degree arrays are not equal"); }
+    else { throw invalid_argument("Error: degree arrays are not equal"); }
 }
 
 Monom Monom::operator-(const Monom& other) const
 {
     if (ratio(other)) { return Monom(coeff - other.coeff, deg); }
-    else { throw std::invalid_argument("Error: degree arrays are not equal"); }
+    else { throw invalid_argument("Error: degree arrays are not equal"); }
 }
 
 Monom Monom::operator*(const Monom& other) const
@@ -104,31 +82,54 @@ Monom Monom::operator/(const Monom& other) const
         deg[2] - other.deg[2] });
 }
 
-Monom Monom::DerX(const Monom&) const
+Monom Monom::DerX() const
 {
-    if (deg[0] > 0) { return Monom(coeff * deg[0], degree_array({ deg[0] - 1, deg[1], deg[2] })); }
-    else { throw invalid_argument("Error: degree of x is 0"); }
+    if (deg[0] == 0) { throw invalid_argument("Error: degree of x is 0"); }
+
+    double new_coeff = coeff * deg[0];
+    array<int, 3> new_degree = { deg[0] - 1, deg[1], deg[2] };
+
+    return Monom(new_coeff, new_degree);
 }
 
-Monom Monom::DerY(const Monom&) const
+Monom Monom::DerY() const
 {
-    if (deg[1] > 0) { return Monom(coeff * deg[1], degree_array({ deg[0], deg[1] - 1, deg[2] })); }
-    else { throw std::invalid_argument("Error: degree of y is 0"); }
+    if (deg[1] == 0) { throw invalid_argument("Error: degree of y is 0"); }
+
+    double new_coeff = coeff * deg[1];
+    array<int, 3> new_degree = { deg[0], deg[1] - 1, deg[2] };
+
+    return Monom(new_coeff, new_degree);
 }
 
-Monom Monom::DerZ(const Monom&) const
+Monom Monom::DerZ() const
 {
-    if (deg[2] > 0) { return Monom(coeff * deg[2], degree_array({ deg[0], deg[1], deg[2] - 1 })); }
-    else { throw std::invalid_argument("Error: degree of z is 0"); }
+    if (deg[2] == 0) { throw invalid_argument("Error: degree of z is 0"); }
+
+    double new_coeff = coeff * deg[2];
+    array<int, 3> new_degree = { deg[0], deg[1], deg[2] - 1 };
+
+    return Monom(new_coeff, new_degree);
 }
 
 string Monom::Print() const
 {
-    std::stringstream ss;
-    ss << coeff;
-    if (deg[0] > 0) { ss << "x^" << deg[0]; }
-    if (deg[1] > 0) { ss << "*y^" << deg[1]; }
-    if (deg[2] > 0) { ss << "*z^" << deg[2]; }
-    return ss.str();
+    ostringstream out;
+    if (coeff == 0) { return "0"; }
+    if (coeff != 1 || (coeff == 1 && deg[0] == 0 && deg[1] == 0 && deg[2] == 0)) { out << coeff; }
+    if (deg[0] > 0) { out << "x"; }
+    if (deg[0] > 1) { out << "^" << deg[0]; }
+    if (deg[1] > 0)
+    {
+        if (deg[0] > 0) { out << "*"; }
+        out << "y";
+    }
+    if (deg[1] > 1) { out << "^" << deg[1]; }
+    if (deg[2] > 0)
+    {
+        if (deg[0] > 0 || deg[1] > 0) { out << "*"; }
+        out << "z";
+    }
+    if (deg[2] > 1) { out << "^" << deg[2]; }
+    return out.str();
 }
-

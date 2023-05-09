@@ -2,21 +2,16 @@
 #define poly_hpp
 
 #include "monom.hpp"
-#include "list.hpp"
-
-using namespace std;
+#include <list>
 
 class Poly
 {
 private:
-    List<Monom> list;
+    std::list<Monom> list;
 public:
     Poly() { };
-    
     Poly(const Poly& _poly);
-    
-    Poly(const List<Monom>& _list);
-    
+    Poly(const std::list<Monom>& _list);
     ~Poly() { }
     
     Poly& operator=(const Poly& other);
@@ -25,6 +20,7 @@ public:
     Poly operator+(const double other) const;
     
     Poly operator-(const Poly& other) const;
+    //Poly operator-(const double other) const;
     
     Poly operator*(const Poly& other) const;
     Poly operator*(const double other) const;
@@ -32,6 +28,8 @@ public:
     Poly operator/(const Poly& other) const;
 
     double Point(double _x, double _y, double _z) const;
+    
+    Poly Derivative() const;
     
     string Print() const;
 };
