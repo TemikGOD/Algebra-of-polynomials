@@ -1,14 +1,12 @@
 #include "poly.hpp"
-#include "list.hpp"
-
-#include <array>
+#include <iostream>
 #include <math.h>
 
 using namespace std;
 
 Poly::Poly(const Poly& other) : list(other.list) { }
 
-Poly::Poly(const List<Monom>& _list) : list(_list) { }
+Poly::Poly(const std::list<Monom>& _list) : list(_list) { }
 
 Poly& Poly::operator=(const Poly& other)
 {
@@ -19,71 +17,78 @@ Poly& Poly::operator=(const Poly& other)
 Poly Poly::operator+(const Poly& other) const
 {
     Poly res;
-    List<Monom> copy1 = list;
-    List<Monom> copy2 = other.list;
-    
-    while (!copy1.isEmpty() && !copy2.isEmpty())
+    std::list<Monom> copy1 = list;
+    std::list<Monom> copy2 = other.list;
+
+    while (!copy1.empty() && !copy2.empty())
     {
-        Monom monom1 = copy1.pop_front();
-        Monom monom2 = copy2.pop_front();
-        
+        Monom monom1 = copy1.front();
+        Monom monom2 = copy2.front();
+
         if (monom1.getDegree() > monom2.getDegree())
         {
             res.list.push_back(monom1);
-            copy2.push_front(monom2);
+            copy1.pop_front();
         }
         else if (monom1.getDegree() < monom2.getDegree())
         {
             res.list.push_back(monom2);
-            copy1.push_front(monom1);
+            copy2.pop_front();
         }
         else
         {
             Monom sum = monom1 + monom2;
+            
             if (sum.getCoeff() != 0) { res.list.push_back(sum); }
+            copy1.pop_front();
+            copy2.pop_front();
         }
     }
-    while (!copy1.isEmpty()) { res.list.push_back(copy1.pop_front()); }
     
-    while (!copy2.isEmpty()) { res.list.push_back(copy2.pop_front()); }
-    
-   return res;
+    while (!copy1.empty()) { res.list.push_back(copy1.front()); copy1.pop_front(); }
+    while (!copy2.empty()) { res.list.push_back(copy2.front()); copy2.pop_front(); }
+    return res;
 }
 
 Poly Poly::operator+(const double other) const
 {
     Poly res;
-    List<Monom> copy = list;
-    
+    std::list<Monom> copy = list;
+
     int deg[3] = {0, 0, 0};
-    
+
     Monom monom(other, deg);
     res.list.push_back(monom);
-    
-    while (!copy.isEmpty()) { Monom monom = copy.pop_front(); res.list.push_back(monom); }
-    
+
+    while (!copy.empty()) { Monom monom = copy.front(); res.list.push_back(monom); copy.pop_front(); }
     return res;
 }
 
 Poly Poly::operator-(const Poly& other) const
 {
     Poly res;
-    List<Monom> copy1 = list;
-    List<Monom> copy2 = other.list;
-    
-    while (!copy1.isEmpty() || !copy2.isEmpty())
+    std::list<Monom> copy1 = list;
+    std::list<Monom> copy2 = other.list;
+
+    while (!copy1.empty() || !copy2.empty())
     {
-        if (copy1.isEmpty() || copy1.getHead()->getValue().getDegree() < copy2.getHead()->getValue().getDegree())
+        if (copy1.empty() || copy1.front().getDegree() < copy2.front().getDegree())
         {
-            Monom neg = copy2.pop_front() * -1.0;
+            Monom neg = copy2.front() * -1.0;
             if (neg.getCoeff() != 0) { res.list.push_back(neg); }
+            copy2.pop_front();
         }
-        else if (copy2.isEmpty() || copy1.getHead()->getValue().getDegree() > copy2.getHead()->getValue().getDegree()) { res.list.push_back(copy1.pop_front()); }
+        else if (copy2.empty() || copy1.front().getDegree() > copy2.front().getDegree())
+        {
+            res.list.push_back(copy1.front());
+            copy1.pop_front();
+        }
         else
         {
-            Monom diff = copy1.pop_front() - copy2.pop_front();
-            if (diff.getCoeff() != 0) { res.list.push_back(diff);
-            }
+            Monom diff = copy1.front() - copy2.front();
+            if (diff.getCoeff() != 0) { res.list.push_back(diff); }
+            copy1.pop_front();
+            copy2.pop_front();
         }
     }
     return res;
@@ -92,105 +97,137 @@ Poly Poly::operator-(const Poly& other) const
 Poly Poly::operator*(const Poly& other) const
 {
     Poly res;
-    List<Monom> copy1 = list;
-    
-    while (!copy1.isEmpty())
+    std::list<Monom> copy1 = list;
+
+    while (!copy1.empty())
     {
-        Monom monom1 = copy1.pop_front();
-        List<Monom> temp;
-        List<Monom> copy2 = other.list;
-        
-        while (!copy2.isEmpty())
+        Monom monom1 = copy1.front();
+        copy1.pop_front();
+
+        std::list<Monom> temp;
+        std::list<Monom> copy2 = other.list;
+
+        while (!copy2.empty())
         {
-            Monom monom2 = copy2.pop_front();
+            Monom monom2 = copy2.front();
+            copy2.pop_front();
+
             Monom mul = monom1 * monom2;
-            
+
             if (mul.getCoeff() != 0) { temp.push_back(mul); }
         }
         res = res + Poly(temp);
     }
-    
+
     return res;
 }
 
 Poly Poly::operator*(const double other) const
 {
     Poly res;
-    List<Monom> copy = list;
-    
-    while (!copy.isEmpty())
+    std::list<Monom> copy = list;
+
+    while (!copy.empty())
     {
-        Monom monom = copy.pop_front();
+        Monom monom = copy.front();
+        copy.pop_front();
+
         Monom mul = monom * other;
         if (mul.getCoeff() != 0) { res.list.push_back(mul); }
     }
-    
+
     return res;
 }
 
 Poly Poly::operator/(const Poly& other) const
 {
-    if (other.list.isEmpty()) { throw runtime_error("Division by zero"); }
+    if (other.list.empty()) { throw runtime_error("Division by zero"); }
 
     Poly remainder(*this);
     Poly quotient;
 
-    while (!remainder.list.isEmpty() && remainder.list.getHead()->getValue().getDegree() >= other.list.getHead()->getValue().getDegree())
+    while (!remainder.list.empty() && remainder.list.front().getDegree() >= other.list.front().getDegree())
     {
-        int coeff = static_cast<int>(remainder.list.getHead()->getValue().getCoeff() / other.list.getHead()->getValue().getCoeff());
-        int degree = remainder.list.getHead()->getValue().getDegree() - other.list.getHead()->getValue().getDegree();
-        
-        Monom monom(coeff, array<int, 3>({ degree, 0, 0 }));
-        
-        // проверяем, является ли результат деления мономов целым числом
-        if (remainder.list.getHead()->getValue().getCoeff() != coeff * other.list.getHead()->getValue().getCoeff())
+        int coeff = static_cast<int>(remainder.list.front().getCoeff() / other.list.front().getCoeff());
+        int degree = remainder.list.front().getDegree() - other.list.front().getDegree();
+
+        Monom monom(coeff, std::array<int, 3>({ degree, 0, 0 }));
+
+        if (remainder.list.front().getCoeff() != coeff * other.list.front().getCoeff())
         {
-            throw std::runtime_error("Non-integral result of division");
+            throw runtime_error("Non-integral result of division");
         }
-        
+
         quotient.list.push_back(monom);
-        List<Monom> monomList;
+        std::list<Monom> monomList;
         monomList.push_back(monom);
         Poly temp(monomList);
         temp = temp * other;
         remainder = remainder - temp;
     }
-    
+
     return quotient;
 }
 
 double Poly::Point(double _x, double _y, double _z) const
 {
-    double result = 0; List<Monom> copy; copy.copy(list);
-    while (!copy.isEmpty()) { Monom monom; monom = copy.pop_back();
-        double coef = monom.coeff;
-        int x = monom.deg[0];
-        int y = monom.deg[1];
-        int z = monom.deg[2];
-        result += coef * pow(_x, x) * pow(_y, y) * pow(_z, z); }
+    double result = 0;
+    std::list<Monom> copy = list;
+
+    while (!copy.empty())
+    {
+        Monom monom = copy.back();
+        copy.pop_back();
+
+        double coef = monom.getCoeff();
+        int x = monom.getDegree(0);
+        int y = monom.getDegree(1);
+        int z = monom.getDegree(2);
+
+        result += coef * pow(_x, x) * pow(_y, y) * pow(_z, z);
+    }
+
     return result;
 }
 
-string Poly::Print() const
+Poly Poly::Derivative() const
 {
-    ostringstream out;
-    bool per = true;
-    
-    List<Monom> copy;
-    copy.copy(list);
-    
-    while (!copy.isEmpty())
+    std::list<Monom> derivs;
+
+    for (const auto& monom : list)
     {
-        Monom monom = copy.pop_back();
-        
-        if (monom.getCoeff() == 0) { continue; }
-        
-        if (!per && monom.getCoeff() >= 0) { out << "+"; }
-        
-        per = false;
-        out << monom.Print();
+        try
+        {
+            Monom deriv(0, {0, 0, 0});
+            deriv = deriv + monom.DerX();
+            deriv = deriv + monom.DerY();
+            deriv = deriv + monom.DerZ();
+
+            if (deriv.getCoeff() != 0) { derivs.push_back(deriv); }
+        }
+        catch (std::invalid_argument& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
-    
-    if (per) { out << "0"; }
+
+    if (derivs.empty()) { derivs.push_back(Monom(0)); }
+
+    return Poly(derivs);
+}
+
+std::string Poly::Print() const
+{
+    std::ostringstream out;
+    if (list.empty()) { return "0"; }
+    auto it = list.begin();
+    out << it->Print();
+    ++it;
+    for (; it != list.end(); ++it)
+    {
+        if (it->getCoeff() > 0) { out << " + "; }
+        else { out << " - "; }
+        out << it->Print();
+    }
     return out.str();
 }
