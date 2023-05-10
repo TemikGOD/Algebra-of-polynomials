@@ -14,56 +14,6 @@ Poly& Poly::operator=(const Poly& other)
     return *this;
 }
 
-Poly Poly::operator+(const Poly& other) const
-{
-    Poly res;
-    std::list<Monom> copy1 = list;
-    std::list<Monom> copy2 = other.list;
-
-    while (!copy1.empty() && !copy2.empty())
-    {
-        Monom monom1 = copy1.front();
-        Monom monom2 = copy2.front();
-
-        if (monom1.getDegree() > monom2.getDegree())
-        {
-            res.list.push_back(monom1);
-            copy1.pop_front();
-        }
-        else if (monom1.getDegree() < monom2.getDegree())
-        {
-            res.list.push_back(monom2);
-            copy2.pop_front();
-        }
-        else
-        {
-            Monom sum = monom1 + monom2;
-            
-            if (sum.getCoeff() != 0) { res.list.push_back(sum); }
-            copy1.pop_front();
-            copy2.pop_front();
-        }
-    }
-    
-    while (!copy1.empty()) { res.list.push_back(copy1.front()); copy1.pop_front(); }
-    while (!copy2.empty()) { res.list.push_back(copy2.front()); copy2.pop_front(); }
-    return res;
-}
-
-Poly Poly::operator+(const double other) const
-{
-    Poly res;
-    std::list<Monom> copy = list;
-
-    int deg[3] = {0, 0, 0};
-
-    Monom monom(other, deg);
-    res.list.push_back(monom);
-
-    while (!copy.empty()) { Monom monom = copy.front(); res.list.push_back(monom); copy.pop_front(); }
-    return res;
-}
-
 Poly Poly::operator-(const Poly& other) const
 {
     Poly res;
@@ -91,34 +41,6 @@ Poly Poly::operator-(const Poly& other) const
             copy2.pop_front();
         }
     }
-    return res;
-}
-
-Poly Poly::operator*(const Poly& other) const
-{
-    Poly res;
-    std::list<Monom> copy1 = list;
-
-    while (!copy1.empty())
-    {
-        Monom monom1 = copy1.front();
-        copy1.pop_front();
-
-        std::list<Monom> temp;
-        std::list<Monom> copy2 = other.list;
-
-        while (!copy2.empty())
-        {
-            Monom monom2 = copy2.front();
-            copy2.pop_front();
-
-            Monom mul = monom1 * monom2;
-
-            if (mul.getCoeff() != 0) { temp.push_back(mul); }
-        }
-        res = res + Poly(temp);
-    }
-
     return res;
 }
 
@@ -226,7 +148,6 @@ std::string Poly::Print() const
     for (; it != list.end(); ++it)
     {
         if (it->getCoeff() > 0) { out << " + "; }
-        else { out << " - "; }
         out << it->Print();
     }
     return out.str();
