@@ -22,7 +22,9 @@ private:
     size_t iSearch(const string& key) const { return hash<string>{ }(key) % size; }
 public:
     
-    void addPolynomial(const string& key, Poly* const polynomial)
+    explicit OpenHashTable(const size_t _size) : size(_size), data(_size) {}
+    
+    void addPolynomial(const string& key, Poly* const polynomial) override
     {
         PolyData obj = { key, polynomial };
         size_t i = iSearch(key);
@@ -32,7 +34,7 @@ public:
         data[i].push_back(obj);
     }
 
-    void deletePolynomial(const string& key)
+    void deletePolynomial(const string& key) override
     {
         size_t i = iSearch(key);
 
@@ -44,7 +46,7 @@ public:
         vec.erase(it);
     }
 
-    Poly searchPolynomial(const string& key) const
+    Poly searchPolynomial(const string& key)
     {
         size_t i = iSearch(key);
 
