@@ -18,13 +18,23 @@ private:
 public:
     LinearListTable() {}
 
-    void addPolynomial(const string& key, Poly* polynomial)
+    virtual ~LinearListTable()
+    {
+        for (const auto &del: items)
+            delete del.second;
+        items.clear();
+    }
+
+    Poly getPol(int index) override {auto it = items.begin(); std::advance(it, index); return *it->second; };
+    string getKey(int index) override {auto it = items.begin(); std::advance(it, index); return it->first; };
+
+    void addPolynomial(const string& key, Poly* polynomial) override
     {
         if (isPolynomialInTable(key)) { throw AddException("Polynomial already exists in table"); }
         items.emplace_back(key, polynomial);
     }
 
-    void deletePolynomial(const string& key)
+    void deletePolynomial(const string& key) override
     {
         if (items.empty()) { throw EmptyTableException("Table is empty"); }
         
@@ -35,7 +45,7 @@ public:
         throw NoPolyException("Polynomial not found in table");
     }
 
-    Poly searchPolynomial(const string& key)
+    Poly searchPolynomial(const string& key) override
     {
         for (const auto& item : items) { if (item.first == key) { return *item.second; } }
         throw NothingFoundException("Polynomial not found in table");

@@ -5,15 +5,6 @@
 
 using namespace std;
 
-Poly::Poly(const Poly& other) : list(other.list) { }
-
-Poly::Poly(const std::list<Monom>& _list) : list(_list) { }
-
-Poly& Poly::operator=(const Poly& other)
-{
-    list = other.list;
-    return *this;
-}
 
 Poly Poly::operator+(const Poly& other) const // Постфиксная запись оператора "+"
 {
@@ -121,20 +112,3 @@ Poly Poly::operator*(const Poly& other) const // Постфиксная запись операции "*"
     return res;
 }
 
-
-
-std::string Poly::Print() const
-{
-    std::ostringstream out;
-    if (list.empty()) { return "0"; }
-    auto it = list.begin();
-    out << it->Print();
-    ++it;
-    for (; it != list.end(); ++it)
-    {
-        if (it->getCoeff() > 0) { out << " + "; }
-        else { out << " - "; }
-        out << it->Print();
-    }
-    return out.str();
-}

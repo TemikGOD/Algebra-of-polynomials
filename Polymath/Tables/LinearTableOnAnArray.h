@@ -4,7 +4,7 @@
 #include <exception>
 #include "MyExcepions.hpp"
 
-class LinearTableOnAnArray :protected TableInterface
+class LinearTableOnAnArray :public TableInterface
 {
 private:
 	struct tableRow
@@ -17,6 +17,11 @@ private:
 			key = _key;
 			value = _value;
 		}
+
+        ~tableRow()
+        {
+            delete value;
+        }
 	};
 
 	std::vector<tableRow> table;
@@ -25,6 +30,16 @@ public:
 	LinearTableOnAnArray() = default;
 	size_t size() const noexcept { return table.size(); }
 	Poly operator[](size_t poz) { return *table[poz].value; }
+
+    virtual ~LinearTableOnAnArray()
+    {
+        for (auto del: table)
+            del.~tableRow();
+        table.clear();
+    }
+
+    Poly getPol(int index) override { return *table[index].value; }
+    string getKey(int index) override { return table[index].key; }
 
 	Poly searchPolynomial(const std::string& _key) override
 	{
@@ -41,7 +56,7 @@ public:
 		{
 			searchPolynomial(_key);
 		}
-        catch (const NothingFoundException&)
+        catch (NothingFoundException& exp)
 		{
 			table.push_back(tableRow(_key, _pol));
 			addedCheck = true;

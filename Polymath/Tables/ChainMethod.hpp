@@ -1,10 +1,10 @@
+#pragma once
 #include <vector>
 #include <list>
 #include <utility>
 #include <string>
-#include "poly.hpp"
 #include "TableInterface.hpp"
-#include "MyExeptions.hpp"
+#include "MyExcepions.hpp"
 
 using namespace std;
 
@@ -13,7 +13,23 @@ public:
     HashTable() : size(100), table(size) {}
     HashTable(int _size) : size(_size), table(size) {}
 
-    void addPolynomial(const std::string& _key, Poly* const _polynomial) {
+    virtual ~HashTable()
+    {
+        for(auto del: table)
+        {
+            for (const auto &del1: del)
+            {
+                delete del1.second;
+            }
+            del.clear();
+        }
+        table.clear();
+    }
+
+    Poly getPol(int index) override { return *table[index].front().second; };
+    string getKey(int index) override { return table[index].front().first; };
+
+    void addPolynomial(const std::string& _key, Poly* const _polynomial) override {
         int index = hashFunction(_key);
         for (auto it = table[index].begin(); it != table[index].end(); it++) {
             if (it->first == _key) {
@@ -28,7 +44,7 @@ public:
         }
     }
 
-    void deletePolynomial(const std::string& _key) {
+    void deletePolynomial(const std::string& _key) override {
         if (count == 0) {
             throw EmptyTableException("Cannot delete polynomial from an empty table.");
         }
@@ -43,7 +59,7 @@ public:
         throw NothingFoundException("Cannot delete polynomial with Key not found.");
     }
 
-    Poly searchPolynomial(const std::string& _key) {
+    Poly searchPolynomial(const std::string& _key) override {
         if (count == 0) {
             throw EmptyTableException("Cannot search for polynomial in an empty table.");
         }
