@@ -30,6 +30,8 @@ public:
     double Point(double _x, double _y, double _z) const;
     
     Poly Derivative() const;
+
+    Poly friend stringToPoly(std::string str);
     
     string Print() const;
 };

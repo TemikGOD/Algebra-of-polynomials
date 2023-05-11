@@ -23,6 +23,8 @@ public:
 
     double getCoeff() const;
     int getDegree(int index = 0) const;
+    void setCoeff(const double&);
+    void setDegree(const int& _index, const int& _degree);
     
     Monom& operator=(const Monom& other);
     

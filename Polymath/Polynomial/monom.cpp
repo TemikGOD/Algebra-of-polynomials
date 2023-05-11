@@ -41,6 +41,16 @@ int Monom::getDegree(int index) const
     else { throw invalid_argument("Error: index out of range"); }
 }
 
+void Monom::setCoeff(const double& _coef)
+{
+    coeff = _coef;
+}
+
+void Monom::setDegree(const int& _index, const int& _degree)
+{
+    deg[_index] = _degree;
+}
+
 bool Monom::ratio(const Monom& other) const
 {
     return (deg[0] == other.deg[0] && deg[1] == other.deg[1] && deg[2] == other.deg[2]);

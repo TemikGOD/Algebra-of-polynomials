@@ -1,8 +1,7 @@
 #include <vector>
-using namespace std;
-
 #include "TableInterface.hpp"
-#include "MyExeptions.hpp"
+#include "MyExcepions.hpp"
+using namespace std;
 
 class OrderedTable : public TableInterface{
 private:
@@ -34,7 +33,16 @@ private:
     }
 public:
     OrderedTable() {}
-       
+
+    virtual ~OrderedTable()
+    {
+        for(const auto &del: OrdArray)
+            delete del.second;
+        OrdArray.clear();
+    }
+
+    Poly getPol(int index) override { return *OrdArray[index].second; }
+    string getKey(int index) override { return OrdArray[index].first; }
     
     void addPolynomial(const std::string& _key, Poly* const _polynomial) override {
         bool addedCheck = false;
@@ -42,7 +50,7 @@ public:
         {
             searchPolynomial(_key);
         }
-        catch (const NothingFoundException&)
+        catch (NothingFoundException& exp)
         {
             OrdArray.push_back({ _key, _polynomial });
             SortTable(OrdArray, 0, OrdArray.size() - 1);
@@ -69,7 +77,7 @@ public:
             throw NothingFoundException("No polynomial found with this key");
     }
     
-    Poly searchPolynomial(const std::string& _key) {
+    Poly searchPolynomial(const std::string& _key) override {
         int temp = -1;
         for (int i = 0; i < OrdArray.size(); i++) {
             if (OrdArray[i].first == _key) {
@@ -78,6 +86,6 @@ public:
             }
         }
         if (temp == -1)
-            throw NoPolyException("Полином с таким ключом не найден");
+            throw NothingFoundException("There is no such key in the table");
     }
 };
